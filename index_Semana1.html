@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Arquiteturas Web Seguras</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #020617;
+            color: #fff;
+            text-align: center;
+            padding: 30px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+        }
+
+        .cenario {
+            position: relative;
+            width: 900px;
+            height: 320px;
+            margin: 40px auto;
+            border: 2px dashed #38bdf8;
+        }
+
+        #blocos {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .bloco {
+            width: 140px;
+            height: 140px;
+            background: #38bdf8;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #020617;
+            font-weight: bold;
+            animation: surgir 0.6s ease;
+        }
+
+        .cadeado {
+            font-size: 34px;
+            transition: transform 0.4s ease;
+        }
+
+        .cadeado.verificando {
+            transform: scale(1.2);
+        }
+
+        .cadeado.negado {
+            animation: negar 0.4s ease;
+        }
+
+        .token {
+            position: absolute;
+            font-size: 18px;
+            animation: moverJWT 2s linear forwards;
+        }
+
+        @keyframes surgir {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes moverJWT {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(260px); opacity: 0; }
+        }
+
+        @keyframes negar {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .container {
+            background: #e0f2fe;
+            animation: subir 0.6s ease forwards;
+        }
+
+        @keyframes subir {
+            from { transform: translateY(40px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .funcao {
+            background: #fde68a;
+            animation: executar 1s ease forwards;
+        }
+
+        @keyframes executar {
+            0% { opacity: 0; transform: scale(0.6); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { opacity: 0; transform: scale(0.8); }
+        }
+
+        #linhas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .atacante {
+            background: #fecaca;
+        }
+
+        .bloqueio {
+            color: red;
+            font-size: 26px;
+            margin-top: 5px;
+        }
+
+        .linha-ataque {
+            stroke-dasharray: 6;
+            animation: ataque 0.8s linear infinite;
+        }
+
+        @keyframes ataque {
+            from { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: 12; }
+        }
+    </style>
+</head>
+<body>
+
+<h1>Arquiteturas Web, Segurança e Nuvem</h1>
+<p id="descricao">Clique em "Próximo" para iniciar</p>
+
+<div class="cenario">
+    <svg id="linhas"></svg>
+    <div id="blocos"></div>
+</div>
+
+<button onclick="proximo()">Próximo</button>
+
+<script>
+let etapa = 0;
+let jwtValido = true;
+
+const blocos = document.getElementById("blocos");
+const descricao = document.getElementById("descricao");
+const svg = document.getElementById("linhas");
+const cenario = document.querySelector(".cenario");
+
+function limpar() {
+    blocos.innerHTML = "";
+    svg.innerHTML = "";
+    document.querySelectorAll(".token").forEach(t => t.remove());
+}
+
+function proximo() {
+    limpar();
+    etapa++;
+
+    switch (etapa) {
+        case 1: monolito(); break;
+        case 2: microsservicos(); break;
+        case 3: ataque(); break;
+        case 4: cloud(); break;
+        case 5: serverless(); break;
+        default:
+            etapa = 0;
+            descricao.innerText = "Clique em 'Próximo' para reiniciar";
+    }
+}
+
+function monolito() {
+    descricao.innerText = "Monólito: um único sistema e um único perímetro de segurança";
+    criarServicoSeguro("MONÓLITO", true);
+}
+
+function microsservicos() {
+    jwtValido = !jwtValido;
+
+    descricao.innerText = jwtValido
+        ? "JWT válido: cadeados fecham (acesso autorizado)"
+        : "JWT inválido: cadeados não fecham (acesso negado)";
+
+    criarServicoSeguro("Pedidos");
+    criarServicoSeguro("Pagamentos");
+    criarServicoSeguro("Usuários");
+
+    linhas(jwtValido ? "#22c55e" : "red");
+    animarJWT(jwtValido);
+}
+
+function ataque() {
+    descricao.innerText =
+        "Ataque externo: JWT inválido é rejeitado e o acesso é bloqueado";
+
+    criarServicoAtaque("API Segura");
+
+    const atacante = document.createElement("div");
+    atacante.className = "bloco atacante";
+    atacante.innerHTML = `
+        <div>🚨</div>
+        <div>Atacante</div>
+        <div class="bloqueio">❌</div>
+    `;
+    blocos.appendChild(atacante);
+
+    conectarAtaque(atacante, document.querySelector(".bloco"), "red");
+    animarJWT(false);
+}
+
+function criarServicoAtaque(nome) {
+    const div = document.createElement("div");
+    div.className = "bloco";
+
+    const cadeado = document.createElement("div");
+    cadeado.className = "cadeado verificando";
+    cadeado.innerText = "🔓";
+
+    const label = document.createElement("div");
+    label.innerText = nome;
+
+    div.appendChild(cadeado);
+    div.appendChild(label);
+    blocos.appendChild(div);
+
+    setTimeout(() => {
+        cadeado.innerText = "🔐";
+    }, 600);
+
+    setTimeout(() => {
+        cadeado.innerText = "🔓";
+        cadeado.classList.add("negado");
+    }, 1100);
+}
+
+function conectarAtaque(origem, destino, cor) {
+    const r1 = origem.getBoundingClientRect();
+    const r2 = destino.getBoundingClientRect();
+    const c = cenario.getBoundingClientRect();
+
+    const linha = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    linha.setAttribute("x1", r1.left + 70 - c.left);
+    linha.setAttribute("y1", r1.top + 70 - c.top);
+    linha.setAttribute("x2", r2.left + 70 - c.left);
+    linha.setAttribute("y2", r2.top + 70 - c.top);
+    linha.setAttribute("stroke", cor);
+    linha.setAttribute("stroke-width", "4");
+    linha.setAttribute("class", "linha-ataque");
+
+    svg.appendChild(linha);
+}
+
+function cloud() {
+    descricao.innerText = "Cloud-native: containers sobem conforme a demanda";
+    criarBlocoSimples("Container 1", "☁️", "container");
+    setTimeout(() => criarBlocoSimples("Container 2", "☁️", "container"), 300);
+    setTimeout(() => criarBlocoSimples("Container 3", "☁️", "container"), 600);
+}
+
+function serverless() {
+    descricao.innerText = "Serverless: funções executadas sob demanda";
+    criarBlocoSimples("Evento", "⚡");
+    setTimeout(() => criarFuncao("Função"), 400);
+    setTimeout(() => criarFuncao("Função"), 800);
+}
+
+function criarServicoSeguro(nome, sempreValido = null) {
+    const div = document.createElement("div");
+    div.className = "bloco";
+
+    const cadeado = document.createElement("div");
+    cadeado.className = "cadeado verificando";
+    cadeado.innerText = "🔓";
+
+    const label = document.createElement("div");
+    label.innerText = nome;
+
+    div.appendChild(cadeado);
+    div.appendChild(label);
+    blocos.appendChild(div);
+
+    setTimeout(() => {
+        cadeado.classList.remove("verificando");
+
+        const valido = sempreValido !== null ? sempreValido : jwtValido;
+
+        if (valido) {
+            cadeado.innerText = "🔐";
+        } else {
+            cadeado.classList.add("negado");
+            cadeado.innerText = "🔓";
+        }
+    }, 900);
+}
+
+function criarBlocoSimples(texto, icone, classe = "") {
+    const div = document.createElement("div");
+    div.className = `bloco ${classe}`;
+    div.innerHTML = `<div>${icone}</div><div>${texto}</div>`;
+    blocos.appendChild(div);
+}
+
+function criarFuncao(nome) {
+    const div = document.createElement("div");
+    div.className = "bloco funcao";
+    div.innerHTML = `<div>⚡</div><div>${nome}</div>`;
+    blocos.appendChild(div);
+    setTimeout(() => div.remove(), 1000);
+}
+
+function linhas(cor) {
+    const els = document.querySelectorAll(".bloco");
+    for (let i = 0; i < els.length - 1; i++) conectar(els[i], els[i + 1], cor);
+}
+
+function conectar(a, b, cor) {
+    const r1 = a.getBoundingClientRect();
+    const r2 = b.getBoundingClientRect();
+    const c = cenario.getBoundingClientRect();
+
+    const l = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    l.setAttribute("x1", r1.left + 70 - c.left);
+    l.setAttribute("y1", r1.top + 70 - c.top);
+    l.setAttribute("x2", r2.left + 70 - c.left);
+    l.setAttribute("y2", r2.top + 70 - c.top);
+    l.setAttribute("stroke", cor);
+    l.setAttribute("stroke-width", "4");
+    l.setAttribute("stroke-dasharray", "6");
+    svg.appendChild(l);
+}
+
+function animarJWT(valido) {
+    const t = document.createElement("div");
+    t.className = "token";
+    t.innerText = valido ? "JWT 🔑" : "JWT ❌";
+    t.style.top = "160px";
+    t.style.left = "260px";
+    cenario.appendChild(t);
+    setTimeout(() => t.remove(), 2000);
+}
+</script>
+
+</body>
+</html>
