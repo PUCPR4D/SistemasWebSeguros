@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Demo HTTP x HTTPS</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      text-align: center;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 40px;
+    }
+
+    .box {
+      width: 30%;
+      padding: 20px;
+      border-radius: 10px;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .cliente {
+      border-left: 6px solid #2196f3;
+    }
+
+    .servidor {
+      border-left: 6px solid #4caf50;
+    }
+
+    .rede {
+      border-left: 6px solid #ff9800;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .http {
+      background: #e53935;
+      color: white;
+    }
+
+    .https {
+      background: #2e7d32;
+      color: white;
+    }
+
+    pre {
+      background: #eee;
+      padding: 10px;
+      text-align: left;
+      border-radius: 5px;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Comunicação Web: HTTP x HTTPS</h1>
+<p>Clique para simular uma requisição do navegador para o servidor</p>
+
+<div class="container">
+
+  <div class="box cliente">
+    <h3>🌐 Cliente (Navegador)</h3>
+    <p>Usuário faz uma requisição</p>
+    <button class="http" onclick="enviarHTTP()">Enviar HTTP</button>
+    <button class="https" onclick="enviarHTTPS()">Enviar HTTPS</button>
+  </div>
+
+  <div class="box rede">
+    <h3>📡 Rede</h3>
+    <pre id="rede">Aguardando requisição...</pre>
+  </div>
+
+  <div class="box servidor">
+    <h3>🖥️ Servidor</h3>
+    <pre id="servidor">Aguardando dados...</pre>
+  </div>
+
+</div>
+
+<script>
+  function enviarHTTP() {
+    document.getElementById("rede").textContent =
+      "GET /login\nusuario=admin&senha=1234\n⚠ Dados em texto puro";
+
+    document.getElementById("servidor").textContent =
+      "Resposta 200 OK\n⚠ Senha recebida sem proteção";
+  }
+
+  function enviarHTTPS() {
+    document.getElementById("rede").textContent =
+      "GET /login\n🔒 Dados criptografados (SSL/TLS)";
+
+    document.getElementById("servidor").textContent =
+      "Resposta 200 OK\n🔒 Dados descriptografados com segurança";
+  }
+</script>
+
+</body>
+</html>
