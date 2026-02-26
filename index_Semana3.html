@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Web Services e APIs – Demonstração Visual</title>
+
+<style>
+body{
+  font-family: Arial, sans-serif;
+  background:#f4f6f8;
+  text-align:center;
+}
+
+h1{ color:#333; }
+
+.container{
+  display:flex;
+  justify-content:space-around;
+  margin-top:40px;
+}
+
+.box{
+  width:28%;
+  background:#fff;
+  padding:15px;
+  border-radius:10px;
+  box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+.cliente{ border-left:6px solid #2196f3; }
+.api{ border-left:6px solid #ff9800; }
+.servico{ border-left:6px solid #4caf50; }
+
+button{
+  margin:8px;
+  padding:10px;
+  border:none;
+  border-radius:5px;
+  cursor:pointer;
+  color:#fff;
+  font-size:14px;
+}
+
+.soap{ background:#673ab7; }
+.rest{ background:#009688; }
+.jwt{ background:#2e7d32; }
+
+pre{
+  background:#eee;
+  padding:10px;
+  text-align:left;
+  border-radius:5px;
+  font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Fundamentos de Web Services e APIs</h1>
+<p>SOA • SOAP • REST • JWT</p>
+
+<div class="container">
+
+  <div class="box cliente">
+    <h3>📱 Cliente</h3>
+    <p>Aplicação Web / Mobile</p>
+    <button class="soap" onclick="soap()">SOAP</button>
+    <button class="rest" onclick="rest()">REST</button>
+    <button class="jwt" onclick="jwt()">REST + JWT</button>
+  </div>
+
+  <div class="box api">
+    <h3>🔗 API / Web Service</h3>
+    <pre id="api">Aguardando requisição...</pre>
+  </div>
+
+  <div class="box servico">
+    <h3>🖥️ Serviço</h3>
+    <p>(Arquitetura SOA)</p>
+    <pre id="servico">Aguardando dados...</pre>
+  </div>
+
+</div>
+
+<script>
+function soap(){
+  document.getElementById("api").textContent =
+`SOAP (XML + WSDL)
+<Envelope>
+  <Body>
+    <getCliente/>
+  </Body>
+</Envelope>`;
+
+  document.getElementById("servico").textContent =
+"✔ Contrato rígido\n✔ Alta confiabilidade\n✔ Usado em bancos e governos";
+}
+
+function rest(){
+  document.getElementById("api").textContent =
+`REST (HTTP + JSON)
+GET /clientes/10
+{
+  "id": 10,
+  "nome": "Maria"
+}`;
+
+  document.getElementById("servico").textContent =
+"✔ Simples e leve\n✔ Escalável\n✔ Web e Mobile";
+}
+
+function jwt(){
+  document.getElementById("api").textContent =
+`REST + JWT
+Authorization: Bearer eyJhbGciOiJIUzI1...
+
+GET /pedidos`;
+
+  document.getElementById("servico").textContent =
+"🔒 Usuário autenticado\n🔒 Sem sessão no servidor\n🔒 API segura";
+}
+</script>
+
+</body>
+</html>
